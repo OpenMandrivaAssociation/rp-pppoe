@@ -1,0 +1,190 @@
+%define enable_debug	0
+%{?_with_debug: %global enable_debug 1}
+%{?_without_debug: %global use_debug 0}
+
+%define pppver	2.4.4
+
+Summary:	ADSL/PPPoE userspace driver
+Name:		rp-pppoe
+Version:	3.8
+Release:	%mkrel 2
+Source0:	http://www.roaringpenguin.com/penguin/pppoe/%{name}-%{version}.tar.bz2
+Patch0:		rp-pppoe-3.6-CAN-2004-0564.patch
+Patch2:		rp-pppoe-3.6-include-pppox.patch
+Url:		http://www.roaringpenguin.com/pppoe
+License:	GPL
+Group:		System/Servers
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+Requires:	ppp >= 2.4.1
+BuildRequires:	autoconf2.5
+BuildRequires:	ppp-devel = %{pppver}
+
+%package	gui
+Group:		System/Servers
+Summary:	GUI front-end for rp-pppoe
+Requires:	rp-pppoe >= 3.6
+Requires:	tk
+
+%description
+PPPoE (Point-to-Point Protocol over Ethernet) is a protocol used by
+many ADSL Internet Service Providers. Roaring Penguin has a free
+client for Linux systems to connect to PPPoE service providers.
+
+The client is a user-mode program and does not require any kernel
+modifications. It is fully compliant with RFC 2516, the official PPPoE
+specification.
+
+It has been tested with many ISPs, such as the Canadian Sympatico HSE (High
+Speed Edition) service.
+
+%description	gui
+This package contains the graphical frontend (tk-based) for rp-pppoe.
+
+Install this if you wish to have a graphical frontend for pppoe.
+
+%package	plugin
+Summary:	PPP over ethernet kernel-mode plugin
+Group:		System/Servers
+Requires:	%{name} = %{version}
+Conflicts:	ppp-pppoe
+
+%description	plugin
+PPP over ethernet kernel-mode plugin.
+
+%prep
+%setup -q
+%patch0 -p1 -b .CAN
+%patch2 -p1 -b .pppox
+
+%build
+cd src
+autoconf
+%if %enable_debug
+CFLAGS="%optflags -g" \
+%endif
+%configure2_5x --enable-plugin=%{_includedir}
+%make
+
+perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
+	doc/KERNEL-MODE-PPPOE
+
+%install
+rm -fr %buildroot
+install -d -m 0755 %buildroot
+
+pushd src
+make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+popd
+
+pushd gui
+make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+popd
+
+# This is necessary for the gui to work, but it shouldn't be done here !
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ppp/rp-pppoe-gui
+
+mkdir -p $RPM_BUILD_ROOT%{_menudir}
+cat << EOF > $RPM_BUILD_ROOT%{_menudir}/rp-pppoe-gui
+?package(rp-pppoe-gui):\
+needs="x11"\
+section="Internet/Remote Access"\
+title="Tkpppoe"\
+longtitle="Frontend for rp-pppoe"\
+command="tkpppoe" \
+%if %{mdkversion} >= 200610
+xdg="true" \
+%endif
+icon="remote_access_section.png"
+EOF
+
+%if %{mdkversion} >= 200610
+mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
+cat > $RPM_BUILD_ROOT%{_datadir}/applications/mandriva-rp-pppoe-gui.desktop <<EOF
+[Desktop Entry]
+Name=TkPPPoE
+Comment=Frontend for rp-pppoe
+Exec=%{_bindir}/tkpppoe
+Icon=remote_access_section
+Terminal=false
+Type=Application
+Categories=X-MandrivaLinux-Internet-RemoteAccess;Network;RemoteAccess;Dialup;
+EOF
+%endif
+
+perl -pi -e "s/restart/restart\|reload/g;" %{buildroot}%{_initrddir}/pppoe
+rm -rf %{buildroot}/usr/doc
+
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/pppd/%{pppver}
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/ppp/plugins/README
+mv -f $RPM_BUILD_ROOT%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
+	$RPM_BUILD_ROOT%{_libdir}/pppd/%{pppver}/
+
+# backward compatibility links
+for i in connect start stop setup status; do
+	ln -sf %{_sbindir}/pppoe-$i $RPM_BUILD_ROOT%{_sbindir}/adsl-$i
+	ln -sf pppoe-$i.8 $RPM_BUILD_ROOT%{_mandir}/man8/adsl-$i.8
+done
+
+%if %enable_debug
+export DONT_STRIP=1
+%endif
+
+%clean
+rm -fr %buildroot
+
+%post gui
+%if %{mdkversion} >= 200610
+%update_desktop_database
+%endif
+%update_menus
+
+%postun gui
+%if %{mdkversion} >= 200610
+%clean_desktop_database
+%endif
+%clean_menus
+
+
+%files
+%defattr(-,root,root)
+%doc doc/* README SERVPOET
+%config(noreplace) %{_sysconfdir}/ppp/pppoe.conf
+%config(noreplace) %{_sysconfdir}/ppp/pppoe-server-options
+%config(noreplace) %{_sysconfdir}/ppp/firewall-masq
+%config(noreplace) %{_sysconfdir}/ppp/firewall-standalone
+%{_sbindir}/pppoe
+%{_sbindir}/pppoe-connect
+%{_sbindir}/pppoe-relay
+%{_sbindir}/pppoe-server
+%{_sbindir}/pppoe-setup
+%{_sbindir}/pppoe-sniff
+%{_sbindir}/pppoe-start
+%{_sbindir}/pppoe-status
+%{_sbindir}/pppoe-stop
+%{_sbindir}/adsl-connect
+%{_sbindir}/adsl-setup
+%{_sbindir}/adsl-start
+%{_sbindir}/adsl-status
+%{_sbindir}/adsl-stop
+%{_mandir}/man[58]/*
+%config(noreplace)%{_initrddir}/pppoe
+
+%files gui
+%defattr(-,root,root)
+%{_bindir}/tkpppoe
+%{_sbindir}/pppoe-wrapper
+%{_mandir}/man1/*
+%{_menudir}/*
+%if %{mdkversion} >= 200610
+%{_datadir}/applications/*
+%endif
+%dir %{_datadir}/tkpppoe
+%dir %{_sysconfdir}/ppp/rp-pppoe-gui
+%{_datadir}/tkpppoe/*
+
+%files plugin
+%defattr(-,root,root)
+%doc doc/KERNEL-MODE-PPPOE
+%attr(755,root,root) %{_libdir}/pppd/%{pppver}/rp-pppoe.so
+
+
