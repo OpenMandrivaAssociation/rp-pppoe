@@ -7,7 +7,7 @@
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.8
-Release:	%mkrel 2
+Release:	%mkrel 3
 Source0:	http://www.roaringpenguin.com/penguin/pppoe/%{name}-%{version}.tar.bz2
 Patch0:		rp-pppoe-3.6-CAN-2004-0564.patch
 Patch2:		rp-pppoe-3.6-include-pppox.patch
@@ -57,12 +57,13 @@ PPP over ethernet kernel-mode plugin.
 %patch2 -p1 -b .pppox
 
 %build
+%serverbuild
 cd src
 autoconf
 %if %enable_debug
-CFLAGS="%optflags -g" \
+CFLAGS="$RPM_OPT_FLAGS -g" \
 %endif
-%configure2_5x --enable-plugin=%{_includedir}
+%configure2_5x --enable-plugin=%{_includedir} --docdir=%{_docdir}/%{name}
 %make
 
 perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
@@ -73,11 +74,11 @@ rm -fr %buildroot
 install -d -m 0755 %buildroot
 
 pushd src
-make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT docdir=%{_docdir}/%{name}
 popd
 
 pushd gui
-make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT docdir=%{_docdir}/%{name}
 popd
 
 # This is necessary for the gui to work, but it shouldn't be done here !
