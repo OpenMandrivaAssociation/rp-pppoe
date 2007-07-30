@@ -7,10 +7,13 @@
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.8
-Release:	%mkrel 3
+Release:	%mkrel 4
 Source0:	http://www.roaringpenguin.com/penguin/pppoe/%{name}-%{version}.tar.bz2
+Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.6-CAN-2004-0564.patch
 Patch2:		rp-pppoe-3.6-include-pppox.patch
+# From http://www.luigisgro.com/sw/rp-pppoe-3.8.session-packet-lost.tar.gz
+Patch3:		rp-pppoe-3.8-session-packet-lost.patch
 Url:		http://www.roaringpenguin.com/pppoe
 License:	GPL
 Group:		System/Servers
@@ -55,6 +58,7 @@ PPP over ethernet kernel-mode plugin.
 %setup -q
 %patch0 -p1 -b .CAN
 %patch2 -p1 -b .pppox
+%patch3 -p1 -b .pktlost
 
 %build
 %serverbuild
@@ -63,7 +67,13 @@ autoconf
 %if %enable_debug
 CFLAGS="$RPM_OPT_FLAGS -g" \
 %endif
-%configure2_5x --enable-plugin=%{_includedir} --docdir=%{_docdir}/%{name}
+%if %{mdkversion} <= 200710
+%configure2_5x  \
+%else
+%configure2_5x --docdir=%{_docdir}/%{name} \
+%endif
+	--enable-plugin=%{_includedir} --docdir=%{_docdir}/%{name}
+
 %make
 
 perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
@@ -72,7 +82,17 @@ perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
 %install
 rm -fr %buildroot
 install -d -m 0755 %buildroot
+install -m 644 %{SOURCE3} ./README-first-session-packet-lost.txt
 
+%if %{mdkversion} <= 200710
+pushd src
+make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+popd
+
+pushd gui
+make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+popd
+%else
 pushd src
 make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT docdir=%{_docdir}/%{name}
 popd
@@ -80,6 +100,7 @@ popd
 pushd gui
 make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT docdir=%{_docdir}/%{name}
 popd
+%endif
 
 # This is necessary for the gui to work, but it shouldn't be done here !
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ppp/rp-pppoe-gui
@@ -128,6 +149,7 @@ done
 
 %if %enable_debug
 export DONT_STRIP=1
+export EXCLUDE_FROM_STRIP=".*"
 %endif
 
 %clean
@@ -149,6 +171,7 @@ rm -fr %buildroot
 %files
 %defattr(-,root,root)
 %doc doc/* README SERVPOET
+%doc README-first-session-packet-lost.txt
 %config(noreplace) %{_sysconfdir}/ppp/pppoe.conf
 %config(noreplace) %{_sysconfdir}/ppp/pppoe-server-options
 %config(noreplace) %{_sysconfdir}/ppp/firewall-masq
