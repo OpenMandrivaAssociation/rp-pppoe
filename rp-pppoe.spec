@@ -17,6 +17,7 @@ Patch3:		rp-pppoe-3.8-session-packet-lost.patch
 Url:		http://www.roaringpenguin.com/pppoe
 License:	GPL
 Group:		System/Servers
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires:	ppp >= 2.4.1
 BuildRequires:	autoconf2.5
 BuildRequires:	ppp-devel = %{pppver}
