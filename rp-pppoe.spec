@@ -105,19 +105,6 @@ popd
 # This is necessary for the gui to work, but it shouldn't be done here !
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ppp/rp-pppoe-gui
 
-mkdir -p $RPM_BUILD_ROOT%{_menudir}
-cat << EOF > $RPM_BUILD_ROOT%{_menudir}/rp-pppoe-gui
-?package(rp-pppoe-gui):\
-needs="x11"\
-section="Internet/Remote Access"\
-title="Tkpppoe"\
-longtitle="Frontend for rp-pppoe"\
-command="tkpppoe" \
-%if %{mdkversion} >= 200610
-xdg="true" \
-%endif
-icon="remote_access_section.png"
-EOF
 
 %if %{mdkversion} >= 200610
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
@@ -198,7 +185,6 @@ rm -fr %buildroot
 %{_bindir}/tkpppoe
 %{_sbindir}/pppoe-wrapper
 %{_mandir}/man1/*
-%{_menudir}/*
 %if %{mdkversion} >= 200610
 %{_datadir}/applications/*
 %endif
