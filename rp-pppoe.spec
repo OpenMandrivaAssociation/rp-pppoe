@@ -12,6 +12,7 @@ Source0:	http://www.roaringpenguin.com/penguin/pppoe/%{name}-%{version}.tar.bz2
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.6-CAN-2004-0564.patch
 Patch1:		rp-pppoe-3.8-pppox.patch
+Patch2:		rp-pppoe-3.8-au64.patch
 # From http://www.luigisgro.com/sw/rp-pppoe-3.8.session-packet-lost.tar.gz
 Patch3:		rp-pppoe-3.8-session-packet-lost.patch
 Url:		http://www.roaringpenguin.com/pppoe
@@ -58,6 +59,7 @@ PPP over ethernet kernel-mode plugin.
 %setup -q
 %patch0 -p1 -b .CAN
 %patch1 -p1 -b .pppox
+%patch2 -p1 -b .au64
 %patch3 -p1 -b .pktlost
 
 %build
