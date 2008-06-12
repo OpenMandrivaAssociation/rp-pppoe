@@ -146,15 +146,23 @@ rm -fr %buildroot
 
 %post gui
 %if %{mdkversion} >= 200610
+%if %mdkversion < 200900
 %update_desktop_database
 %endif
+%endif
+%if %mdkversion < 200900
 %update_menus
+%endif
 
 %postun gui
 %if %{mdkversion} >= 200610
+%if %mdkversion < 200900
 %clean_desktop_database
 %endif
+%endif
+%if %mdkversion < 200900
 %clean_menus
+%endif
 
 
 %files
