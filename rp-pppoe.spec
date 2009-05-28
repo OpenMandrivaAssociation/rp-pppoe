@@ -6,15 +6,11 @@
 
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
-Version:	3.8
-Release:	%mkrel 6
-Source0:	http://www.roaringpenguin.com/penguin/pppoe/%{name}-%{version}.tar.bz2
+Version:	3.10
+Release:	%mkrel 1
+Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
-Patch1:		rp-pppoe-3.8-pppox.patch
-Patch2:		rp-pppoe-3.8-au64.patch
-# From http://www.luigisgro.com/sw/rp-pppoe-3.8.session-packet-lost.tar.gz
-Patch3:		rp-pppoe-3.8-session-packet-lost.patch
 Url:		http://www.roaringpenguin.com/pppoe
 License:	GPL
 Group:		System/Servers
@@ -58,9 +54,6 @@ PPP over ethernet kernel-mode plugin.
 %prep
 %setup -q
 %patch0 -p1 -b .CAN
-%patch1 -p1 -b .pppox
-%patch2 -p1 -b .au64
-%patch3 -p1 -b .pktlost
 
 %build
 %serverbuild
@@ -69,11 +62,7 @@ autoconf
 %if %enable_debug
 CFLAGS="$RPM_OPT_FLAGS -g" \
 %endif
-%if %{mdkversion} <= 200710
-%configure2_5x  \
-%else
 %configure2_5x --docdir=%{_docdir}/%{name} \
-%endif
 	--enable-plugin=%{_includedir} --docdir=%{_docdir}/%{name}
 
 %make
@@ -86,29 +75,17 @@ rm -fr %buildroot
 install -d -m 0755 %buildroot
 install -m 644 %{SOURCE3} ./README-first-session-packet-lost.txt
 
-%if %{mdkversion} <= 200710
 pushd src
-make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+%makeinstall_std
 popd
 
 pushd gui
-make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT
+%makeinstall_std
 popd
-%else
-pushd src
-make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT docdir=%{_docdir}/%{name}
-popd
-
-pushd gui
-make install RPM_INSTALL_ROOT=$RPM_BUILD_ROOT docdir=%{_docdir}/%{name}
-popd
-%endif
 
 # This is necessary for the gui to work, but it shouldn't be done here !
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ppp/rp-pppoe-gui
 
-
-%if %{mdkversion} >= 200610
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
 cat > $RPM_BUILD_ROOT%{_datadir}/applications/mandriva-rp-pppoe-gui.desktop <<EOF
 [Desktop Entry]
@@ -120,10 +97,9 @@ Terminal=false
 Type=Application
 Categories=X-MandrivaLinux-Internet-RemoteAccess;Network;RemoteAccess;Dialup;
 EOF
-%endif
 
 perl -pi -e "s/restart/restart\|reload/g;" %{buildroot}%{_initrddir}/pppoe
-rm -rf %{buildroot}/usr/doc
+rm -rf %{buildroot}/usr/share/doc
 
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/pppd/%{pppver}
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/ppp/plugins/README
@@ -145,22 +121,14 @@ export EXCLUDE_FROM_STRIP=".*"
 rm -fr %buildroot
 
 %post gui
-%if %{mdkversion} >= 200610
 %if %mdkversion < 200900
 %update_desktop_database
-%endif
-%endif
-%if %mdkversion < 200900
 %update_menus
 %endif
 
 %postun gui
-%if %{mdkversion} >= 200610
 %if %mdkversion < 200900
 %clean_desktop_database
-%endif
-%endif
-%if %mdkversion < 200900
 %clean_menus
 %endif
 
