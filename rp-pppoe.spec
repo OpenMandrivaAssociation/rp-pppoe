@@ -2,12 +2,12 @@
 %{?_with_debug: %global enable_debug 1}
 %{?_without_debug: %global use_debug 0}
 
-%define pppver	2.4.4
+%define pppver	2.4.5
 
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.10
-Release:	%mkrel 1
+Release:	%mkrel 2
 Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
