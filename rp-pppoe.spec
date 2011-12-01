@@ -84,10 +84,10 @@ pushd gui
 popd
 
 # This is necessary for the gui to work, but it shouldn't be done here !
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ppp/rp-pppoe-gui
+mkdir -p %{buildroot}%{_sysconfdir}/ppp/rp-pppoe-gui
 
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-cat > $RPM_BUILD_ROOT%{_datadir}/applications/mandriva-rp-pppoe-gui.desktop <<EOF
+mkdir -p %{buildroot}%{_datadir}/applications
+cat > %{buildroot}%{_datadir}/applications/mandriva-rp-pppoe-gui.desktop <<EOF
 [Desktop Entry]
 Name=TkPPPoE
 Comment=Frontend for rp-pppoe
@@ -101,15 +101,15 @@ EOF
 perl -pi -e "s/restart/restart\|reload/g;" %{buildroot}%{_initrddir}/pppoe
 rm -rf %{buildroot}/usr/share/doc
 
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/pppd/%{pppver}
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/ppp/plugins/README
-mv -f $RPM_BUILD_ROOT%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
-	$RPM_BUILD_ROOT%{_libdir}/pppd/%{pppver}/
+mkdir -p %{buildroot}%{_libdir}/pppd/%{pppver}
+rm -f %{buildroot}%{_sysconfdir}/ppp/plugins/README
+mv -f %{buildroot}%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
+	%{buildroot}%{_libdir}/pppd/%{pppver}/
 
 # backward compatibility links
 for i in connect start stop setup status; do
-	ln -sf %{_sbindir}/pppoe-$i $RPM_BUILD_ROOT%{_sbindir}/adsl-$i
-	ln -sf pppoe-$i.8 $RPM_BUILD_ROOT%{_mandir}/man8/adsl-$i.8
+	ln -sf %{_sbindir}/pppoe-$i %{buildroot}%{_sbindir}/adsl-$i
+	ln -sf pppoe-$i.8 %{buildroot}%{_mandir}/man8/adsl-$i.8
 done
 
 %if %enable_debug
