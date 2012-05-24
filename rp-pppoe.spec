@@ -1,15 +1,11 @@
-%define enable_debug	0
-%{?_with_debug: %global enable_debug 1}
-%{?_without_debug: %global use_debug 0}
-
-%define pppver	2.4.5
+%define	pppver	2.4.5
 
 %bcond_without	uclibc
 
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.10
-Release:	%mkrel 5
+Release:	5
 Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
@@ -17,7 +13,6 @@ Patch1:		rp-pppoe-3.10-override-incompatible-compiler-and-linker-flags.patch
 Url:		http://www.roaringpenguin.com/pppoe
 License:	GPL
 Group:		System/Servers
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires:	ppp >= 2.4.1
 BuildRequires:	autoconf2.5
 BuildRequires:	ppp-devel = %{pppver}
@@ -60,7 +55,7 @@ Install this if you wish to have a graphical frontend for pppoe.
 %package	plugin
 Summary:	PPP over ethernet kernel-mode plugin
 Group:		System/Servers
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{EVRD}
 Conflicts:	ppp-pppoe
 
 %description	plugin
@@ -70,17 +65,15 @@ PPP over ethernet kernel-mode plugin.
 %setup -q
 %patch0 -p1 -b .CAN~
 %patch1 -p1 -b .ldflags~
+cp %{SOURCE3} ./README-first-session-packet-lost.txt
+autoconf
 
 %build
 %serverbuild
 cd src
-autoconf
-%if %enable_debug
-CFLAGS="$RPM_OPT_FLAGS -g" \
-%endif
-%configure2_5x --docdir=%{_docdir}/%{name} \
-	--enable-plugin=%{_includedir} --docdir=%{_docdir}/%{name}
-
+%configure2_5x	--docdir=%{_docdir}/%{name} \
+		--enable-plugin=%{_includedir} \
+		--docdir=%{_docdir}/%{name}
 %make
 
 perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
@@ -91,17 +84,9 @@ perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
 %endif
 
 %install
-rm -fr %buildroot
-install -d -m 0755 %buildroot
-install -m 644 %{SOURCE3} ./README-first-session-packet-lost.txt
+%makeinstall_std -C src
 
-pushd src
-%makeinstall_std
-popd
-
-pushd gui
-%makeinstall_std
-popd
+%makeinstall_std -C gui
 
 %if %{with uclibc}
 install -m755 src/pppoe-uclibc -D %{buildroot}%{uclibc_root}/sbin/pppoe
@@ -123,44 +108,15 @@ Categories=X-MandrivaLinux-Internet-RemoteAccess;Network;RemoteAccess;Dialup;
 EOF
 
 perl -pi -e "s/restart/restart\|reload/g;" %{buildroot}%{_initrddir}/pppoe
-rm -rf %{buildroot}/usr/share/doc
 
 mkdir -p %{buildroot}%{_libdir}/pppd/%{pppver}
 rm -f %{buildroot}%{_sysconfdir}/ppp/plugins/README
 mv -f %{buildroot}%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
 	%{buildroot}%{_libdir}/pppd/%{pppver}/
 
-# backward compatibility links
-for i in connect start stop setup status; do
-	ln -sf %{_sbindir}/pppoe-$i %{buildroot}%{_sbindir}/adsl-$i
-	ln -sf pppoe-$i.8 %{buildroot}%{_mandir}/man8/adsl-$i.8
-done
-
-%if %enable_debug
-export DONT_STRIP=1
-export EXCLUDE_FROM_STRIP=".*"
-%endif
-
-%clean
-rm -fr %buildroot
-
-%post gui
-%if %mdkversion < 200900
-%update_desktop_database
-%update_menus
-%endif
-
-%postun gui
-%if %mdkversion < 200900
-%clean_desktop_database
-%clean_menus
-%endif
-
-
 %files
-%defattr(-,root,root)
-%doc doc/* README SERVPOET
 %doc README-first-session-packet-lost.txt
+%doc %{_docdir}/%{name}-%{version}/*
 %config(noreplace) %{_sysconfdir}/ppp/pppoe.conf
 %config(noreplace) %{_sysconfdir}/ppp/pppoe-server-options
 %config(noreplace) %{_sysconfdir}/ppp/firewall-masq
@@ -174,13 +130,8 @@ rm -fr %buildroot
 %{_sbindir}/pppoe-start
 %{_sbindir}/pppoe-status
 %{_sbindir}/pppoe-stop
-%{_sbindir}/adsl-connect
-%{_sbindir}/adsl-setup
-%{_sbindir}/adsl-start
-%{_sbindir}/adsl-status
-%{_sbindir}/adsl-stop
-%{_mandir}/man[58]/*
-%config(noreplace)%{_initrddir}/pppoe
+%{_mandir}/man[58]/*.[58]*
+%{_initrddir}/pppoe
 
 %if %{with uclibc}
 %files -n uclibc-pppoe
@@ -188,20 +139,14 @@ rm -fr %buildroot
 %endif
 
 %files gui
-%defattr(-,root,root)
 %{_bindir}/tkpppoe
 %{_sbindir}/pppoe-wrapper
 %{_mandir}/man1/*
-%if %{mdkversion} >= 200610
 %{_datadir}/applications/*
-%endif
 %dir %{_datadir}/tkpppoe
 %dir %{_sysconfdir}/ppp/rp-pppoe-gui
 %{_datadir}/tkpppoe/*
 
 %files plugin
-%defattr(-,root,root)
 %doc doc/KERNEL-MODE-PPPOE
 %attr(755,root,root) %{_libdir}/pppd/%{pppver}/rp-pppoe.so
-
-
