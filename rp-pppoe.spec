@@ -10,6 +10,7 @@ Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
 Patch1:		rp-pppoe-3.10-override-incompatible-compiler-and-linker-flags.patch
+Patch2:		rp-pppoe-3.10-lsb.patch
 Url:		http://www.roaringpenguin.com/pppoe
 License:	GPL
 Group:		System/Servers
@@ -65,8 +66,8 @@ PPP over ethernet kernel-mode plugin.
 %setup -q
 %patch0 -p1 -b .CAN~
 %patch1 -p1 -b .ldflags~
+%patch2 -p1 -b .lsb~
 cp %{SOURCE3} ./README-first-session-packet-lost.txt
-autoconf
 
 %build
 %serverbuild
@@ -106,8 +107,6 @@ Terminal=false
 Type=Application
 Categories=X-MandrivaLinux-Internet-RemoteAccess;Network;RemoteAccess;Dialup;
 EOF
-
-perl -pi -e "s/restart/restart\|reload/g;" %{buildroot}%{_initrddir}/pppoe
 
 mkdir -p %{buildroot}%{_libdir}/pppd/%{pppver}
 rm -f %{buildroot}%{_sysconfdir}/ppp/plugins/README
