@@ -13,6 +13,7 @@ Release:	%mkrel 5
 Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
+Patch1:		rp-pppoe-3.10-override-incompatible-compiler-and-linker-flags.patch
 Url:		http://www.roaringpenguin.com/pppoe
 License:	GPL
 Group:		System/Servers
@@ -67,7 +68,8 @@ PPP over ethernet kernel-mode plugin.
 
 %prep
 %setup -q
-%patch0 -p1 -b .CAN
+%patch0 -p1 -b .CAN~
+%patch1 -p1 -b .ldflags~
 
 %build
 %serverbuild
