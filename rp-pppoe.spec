@@ -4,10 +4,12 @@
 
 %define pppver	2.4.5
 
+%bcond_without	uclibc
+
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.10
-Release:	%mkrel 4
+Release:	%mkrel 5
 Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
@@ -36,6 +38,18 @@ specification.
 
 It has been tested with many ISPs, such as the Canadian Sympatico HSE (High
 Speed Edition) service.
+
+%if %{with uclibc}
+%package -n	uclibc-pppoe
+Summary:	uClibc-linked build of pppoe
+Group:		System/Servers
+BuildRequires:	uClibc-devel >= 0.9.33.2-3
+
+%description -n	uclibc-pppoe
+This package ships a build of pppoe linked against uClibc.
+
+It's primarily targetted for inclusion with the DrakX installer.
+%endif
 
 %description	gui
 This package contains the graphical frontend (tk-based) for rp-pppoe.
@@ -70,6 +84,10 @@ CFLAGS="$RPM_OPT_FLAGS -g" \
 perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
 	doc/KERNEL-MODE-PPPOE
 
+%if %{with uclibc}
+%{uclibc_cc} -I. -o pppoe-uclibc pppoe.c if.c debug.c common.c ppp.c discovery.c -lcrypt -static -lutil -Wall -Wno-deprecated-declarations -DPPPOE_PATH='"/sbin/pppoe"' -DPPPD_PATH='"/sbin/pppd"' -DVERSION='"3.0-stg1"' %{uclibc_cflags} -static -Os -fwhole-program -flto %{ldflags}
+%endif
+
 %install
 rm -fr %buildroot
 install -d -m 0755 %buildroot
@@ -82,6 +100,10 @@ popd
 pushd gui
 %makeinstall_std
 popd
+
+%if %{with uclibc}
+install -m755 src/pppoe-uclibc -D %{buildroot}%{uclibc_root}/sbin/pppoe
+%endif
 
 # This is necessary for the gui to work, but it shouldn't be done here !
 mkdir -p %{buildroot}%{_sysconfdir}/ppp/rp-pppoe-gui
@@ -157,6 +179,11 @@ rm -fr %buildroot
 %{_sbindir}/adsl-stop
 %{_mandir}/man[58]/*
 %config(noreplace)%{_initrddir}/pppoe
+
+%if %{with uclibc}
+%files -n uclibc-pppoe
+%{uclibc_root}/sbin/pppoe
+%endif
 
 %files gui
 %defattr(-,root,root)
