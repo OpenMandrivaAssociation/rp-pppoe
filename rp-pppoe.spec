@@ -12,7 +12,7 @@ Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
 Patch1:		rp-pppoe-3.10-override-incompatible-compiler-and-linker-flags.patch
 Patch2:		rp-pppoe-3.10-lsb.patch
 Url:		http://www.roaringpenguin.com/pppoe
-License:	GPL
+License:	GPLv2+
 Group:		System/Servers
 Requires:	ppp >= 2.4.1
 BuildRequires:	autoconf2.5
