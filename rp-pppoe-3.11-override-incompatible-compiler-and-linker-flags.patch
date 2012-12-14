@@ -1,0 +1,34 @@
+--- rp-pppoe-3.11/src/Makefile.in.ldflags~	2012-08-17 20:31:25.000000000 +0200
++++ rp-pppoe-3.11/src/Makefile.in	2012-12-14 07:54:17.712086316 +0100
+@@ -114,25 +114,25 @@ relay.o: relay.c relay.h pppoe.h
+ 
+ # Linux-specific plugin
+ rp-pppoe.so: plugin/plugin.o plugin/libplugin.a
+-	@CC@ -o $@ -shared $^ $(LDFLAGS)
++	@CC@ -o $@ -shared $^ $(LDFLAGS) -Wl,--warn-unresolved-symbols
+ 
+ plugin/plugin.o: plugin.c
+-	@CC@ -DPLUGIN=1 '-DRP_VERSION="$(VERSION)"' $(CFLAGS) -I$(PPPD_INCDIR) -c -o $@ -fPIC $<
++	@CC@ -DPLUGIN=1 '-DRP_VERSION="$(VERSION)"' $(CFLAGS) -I$(PPPD_INCDIR) -c -o $@ -fno-PIE -fPIC $<
+ 
+ plugin/libplugin.a: plugin/discovery.o plugin/if.o plugin/common.o plugin/debug.o
+ 	ar -rc $@ $^
+ 
+ plugin/discovery.o: discovery.c
+-	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fPIC $<
++	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fno-PIE -fPIC $<
+ 
+ plugin/if.o: if.c
+-	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fPIC $<
++	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fno-PIE -fPIC $<
+ 
+ plugin/debug.o: debug.c
+-	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fPIC $<
++	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fno-PIE -fPIC $<
+ 
+ plugin/common.o: common.c
+-	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fPIC $<
++	@CC@ -DPLUGIN=1 $(CFLAGS) '-DVERSION="$(VERSION)"' -c -o $@ -fno-PIE -fPIC $<
+ 
+ install: all
+ 	-mkdir -p $(DESTDIR)$(sbindir)
