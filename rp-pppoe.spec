@@ -51,15 +51,6 @@ This package contains the graphical frontend (tk-based) for rp-pppoe.
 
 Install this if you wish to have a graphical frontend for pppoe.
 
-%package	plugin
-Summary:	PPP over ethernet kernel-mode plugin
-Group:		System/Servers
-Requires:	%{name} = %{version}
-Conflicts:	ppp-pppoe
-
-%description	plugin
-PPP over ethernet kernel-mode plugin.
-
 %prep
 %setup -q
 %patch0 -p1 -b .CAN~
@@ -67,17 +58,12 @@ PPP over ethernet kernel-mode plugin.
 %patch2 -p1 -b .lsb~
 cp %{SOURCE3} ./README-first-session-packet-lost.txt
 
-
 %build
 %serverbuild
 cd src
 %configure2_5x	--docdir=%{_docdir}/%{name} \
-		--enable-plugin=%{_includedir} \
-		--docdir=%{_docdir}/%{name}
+		--disable-plugin
 %make
-
-perl -pi -e 's|/etc/ppp/plugins/|%{_libdir}/pppd/%{pppver}|g' \
-	doc/KERNEL-MODE-PPPOE
 
 %if %{with uclibc}
 %{uclibc_cc} -I. -o pppoe-uclibc pppoe.c if.c debug.c common.c ppp.c discovery.c -lcrypt -lutil -Wall -Wno-deprecated-declarations -DPPPOE_PATH='"/sbin/pppoe"' -DPPPD_PATH='"/sbin/pppd"' -DVERSION='"3.0-stg1"' %{uclibc_cflags} -Os -fwhole-program -flto %{ldflags} -Wl,-O1
@@ -109,10 +95,7 @@ EOF
 
 sed -e "s/restart/restart\|reload/g;" -i %{buildroot}%{_initrddir}/pppoe
 
-mkdir -p %{buildroot}%{_libdir}/pppd/%{pppver}
-rm %{buildroot}%{_sysconfdir}/ppp/plugins/README
-mv %{buildroot}%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
-	%{buildroot}%{_libdir}/pppd/%{pppver}/
+rm -r %{buildroot}%{_sysconfdir}/ppp/plugins
 
 %files
 %doc README-first-session-packet-lost.txt
@@ -147,12 +130,10 @@ mv %{buildroot}%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
 %dir %{_sysconfdir}/ppp/rp-pppoe-gui
 %{_datadir}/tkpppoe/*
 
-%files plugin
-%doc doc/KERNEL-MODE-PPPOE
-%attr(755,root,root) %{_libdir}/pppd/%{pppver}/rp-pppoe.so
-
 %changelog
 * Fri Dec 14 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 3.11-2
+- drop kernel plugin, it no longer builds and a working build is already
+  shipped in 'ppp-pppoe' package
 - fix merging with ROSA package
 
 * Thu May 24 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 3.10-5
@@ -207,7 +188,7 @@ mv %{buildroot}%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
     - drop old menu
     - kill re-definition of %%buildroot on Pixel's request
 
-* Mon Jul 30 2007 Giuseppe GhibÃ² <ghibo@mandriva.com> 3.8-4mdv2008.0
+* Mon Jul 30 2007 Giuseppe Ghibò <ghibo@mandriva.com> 3.8-4mdv2008.0
 + Revision: 56482
  Added Luigi Sgro's Patch3 to speed up initial ADSL connection time to ISP.
 
@@ -217,7 +198,7 @@ mv %{buildroot}%{_sysconfdir}/ppp/plugins/rp-pppoe.so \
  fix docdir
 
 
-* Sat Mar 03 2007 Giuseppe GhibÃ² <ghibo@mandriva.com> 3.8-2mdv2007.0
+* Sat Mar 03 2007 Giuseppe Ghibò <ghibo@mandriva.com> 3.8-2mdv2007.0
 + Revision: 131846
  Rebuilt against ppp 2.4.4.
  Rebuilt.
