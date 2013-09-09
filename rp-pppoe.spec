@@ -5,9 +5,11 @@
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.11
-Release:	3
+Release:	4
 Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
+Source4:	pppoe-server.service
+Source5:	pppoe.service
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
 Patch1:		rp-pppoe-3.11-override-incompatible-compiler-and-linker-flags.patch
 Patch2:		rp-pppoe-3.10-lsb.patch
@@ -95,7 +97,9 @@ Type=Application
 Categories=X-MandrivaLinux-Internet-RemoteAccess;Network;RemoteAccess;Dialup;
 EOF
 
-sed -e "s/restart/restart\|reload/g;" -i %{buildroot}%{_initrddir}/pppoe
+rm -f %{buildroot}%{_initrddir}/pppoe
+install -D -m 0644 %{SOURCE4} %{buildroot}%{_unitdir}/pppoe-server.service
+install -D -m 0644 %{SOURCE5} %{buildroot}%{_unitdir}/pppoe.service
 
 rm -r %{buildroot}%{_sysconfdir}/ppp/plugins
 
@@ -116,7 +120,8 @@ rm -r %{buildroot}%{_sysconfdir}/ppp/plugins
 %{_sbindir}/pppoe-status
 %{_sbindir}/pppoe-stop
 %{_mandir}/man[58]/*
-%{_initrddir}/pppoe
+%{_unitdir}/pppoe-server.service
+%{_unitdir}/pppoe.service
 
 %if %{with uclibc}
 %files -n uclibc-pppoe
