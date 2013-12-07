@@ -5,7 +5,7 @@
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.11
-Release:	7
+Release:	8
 Source0:	http://www.roaringpenguin.com/files/download/%{name}-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Source4:	pppoe-server.service
