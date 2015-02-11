@@ -1,6 +1,6 @@
 %bcond_without uclibc
 
-%define	pppver	2.4.5
+%define	pppver	2.4.6
 
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
