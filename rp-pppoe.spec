@@ -1,11 +1,11 @@
-%bcond_without uclibc
+%bcond_with uclibc
 
 %define	pppver	2.4.6
 
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.11
-Release:	12
+Release:	13
 License:	GPLv2+
 Group:		System/Servers
 Url:		http://www.roaringpenguin.com/pppoe
@@ -62,7 +62,7 @@ cp %{SOURCE3} ./README-first-session-packet-lost.txt
 %build
 %serverbuild
 cd src
-%configure2_5x \
+%configure \
 	--docdir=%{_docdir}/%{name} \
 	--disable-plugin
 %make
