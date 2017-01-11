@@ -1,11 +1,9 @@
-%bcond_with uclibc
-
 %define	pppver	2.4.6
 
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.11
-Release:	15
+Release:	16
 License:	GPLv2+
 Group:		System/Servers
 Url:		http://www.roaringpenguin.com/pppoe
@@ -19,12 +17,6 @@ Patch2:		rp-pppoe-3.10-lsb.patch
 BuildRequires:	ppp-devel = %{pppver}
 Requires:	ppp >= 2.4.1
 
-%package	gui
-Summary:	GUI front-end for rp-pppoe
-Group:		System/Servers
-Requires:	rp-pppoe >= 3.6
-Requires:	tk
-
 %description
 PPPoE (Point-to-Point Protocol over Ethernet) is a protocol used by
 many ADSL Internet Service Providers. Roaring Penguin has a free
@@ -37,17 +29,11 @@ specification.
 It has been tested with many ISPs, such as the Canadian Sympatico HSE (High
 Speed Edition) service.
 
-%if %{with uclibc}
-%package -n	uclibc-pppoe
-Summary:	uClibc-linked build of pppoe
+%package	gui
+Summary:	GUI front-end for rp-pppoe
 Group:		System/Servers
-BuildRequires:	uClibc-devel >= 0.9.33.2-3
-
-%description -n	uclibc-pppoe
-This package ships a build of pppoe linked against uClibc.
-
-It's primarily targetted for inclusion with the DrakX installer.
-%endif
+Requires:	rp-pppoe >= 3.6
+Requires:	tk
 
 %description	gui
 This package contains the graphical frontend (tk-based) for rp-pppoe.
@@ -67,18 +53,10 @@ cd src
 	--disable-plugin
 %make
 
-%if %{with uclibc}
-%{uclibc_cc} -I. -o pppoe-uclibc pppoe.c if.c debug.c common.c ppp.c discovery.c -lcrypt -lutil -Wall -Wno-deprecated-declarations -DPPPOE_PATH='"/sbin/pppoe"' -DPPPD_PATH='"/sbin/pppd"' -DVERSION='"3.0-stg1"' %{uclibc_cflags} -Os -fwhole-program -flto %{ldflags} -Wl,-O1
-%endif
-
 %install
 %makeinstall_std -C src
 
 %makeinstall_std -C gui
-
-%if %{with uclibc}
-install -m755 src/pppoe-uclibc -D %{buildroot}%{uclibc_root}/sbin/pppoe
-%endif
 
 # This is necessary for the gui to work, but it shouldn't be done here !
 mkdir -p %{buildroot}%{_sysconfdir}/ppp/rp-pppoe-gui
@@ -120,11 +98,6 @@ rm -r %{buildroot}%{_sysconfdir}/ppp/plugins
 %{_mandir}/man[58]/*
 %{_unitdir}/pppoe-server.service
 %{_unitdir}/pppoe.service
-
-%if %{with uclibc}
-%files -n uclibc-pppoe
-%{uclibc_root}/sbin/pppoe
-%endif
 
 %files gui
 %{_bindir}/tkpppoe
