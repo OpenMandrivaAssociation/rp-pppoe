@@ -3,7 +3,7 @@
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.12
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		System/Servers
 Url:		http://www.roaringpenguin.com/products/pppoe
@@ -14,6 +14,7 @@ Source5:	pppoe.service
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
 Patch1:		rp-pppoe-3.11-override-incompatible-compiler-and-linker-flags.patch
 Patch2:		rp-pppoe-3.10-lsb.patch
+Patch3:		pass-cflags-to-wrapper.patch
 BuildRequires:	ppp-devel = %{pppver}
 Requires:	ppp >= 2.4.1
 
@@ -54,9 +55,9 @@ cd src
 %make
 
 %install
-%makeinstall_std -C src
+%make_install -C src
 
-%makeinstall_std -C gui
+LDFLAGS="%{ldflags}" %make_install -C gui
 
 # This is necessary for the gui to work, but it shouldn't be done here !
 mkdir -p %{buildroot}%{_sysconfdir}/ppp/rp-pppoe-gui
