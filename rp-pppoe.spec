@@ -3,7 +3,7 @@
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.12
-Release:	2
+Release:	3
 License:	GPLv2+
 Group:		System/Servers
 Url:		http://www.roaringpenguin.com/products/pppoe
