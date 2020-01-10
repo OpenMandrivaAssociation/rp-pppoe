@@ -43,7 +43,7 @@ Install this if you wish to have a graphical frontend for pppoe.
 
 %prep
 %setup -q
-%apply_patches
+%autopatch -p1
 cp %{SOURCE3} ./README-first-session-packet-lost.txt
 
 %build
