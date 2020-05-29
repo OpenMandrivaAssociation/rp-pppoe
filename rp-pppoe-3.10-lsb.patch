@@ -1,9 +1,10 @@
---- rp-pppoe-3.10/scripts/pppoe-init.in.orig	2012-05-11 10:34:48.447455209 +0100
-+++ rp-pppoe-3.10/scripts/pppoe-init.in	2012-05-11 10:36:02.490233760 +0100
-@@ -10,6 +10,15 @@
- # Copyright (C) 2000 Roaring Penguin Software Inc.  This software may
- # be distributed under the terms of the GNU General Public License, version
- # 2 or any later version.
+diff -up rp-pppoe-3.14/scripts/pppoe-init.in.3~ rp-pppoe-3.14/scripts/pppoe-init.in
+--- rp-pppoe-3.14/scripts/pppoe-init.in.3~	2020-05-27 02:29:37.000000000 +0200
++++ rp-pppoe-3.14/scripts/pppoe-init.in	2020-05-29 15:53:36.553672514 +0200
+@@ -11,6 +11,15 @@
+ # Copyright (C) 2018 Dianne Skoll
+ # This software may be distributed under the terms of the GNU General
+ # Public License, version 2 or any later version.
 +#
 +### BEGIN INIT INFO
 +# Provides: pppoe
@@ -16,7 +17,7 @@
  
  # Source function library if it exists
  test -r /etc/rc.d/init.d/functions && . /etc/rc.d/init.d/functions
-@@ -49,7 +58,7 @@
+@@ -50,7 +59,7 @@ case "$1" in
          echo ""
          ;;
  
@@ -25,7 +26,7 @@
  	$0 stop
  	$0 start
  	;;
-@@ -59,7 +68,7 @@
+@@ -60,7 +69,7 @@ case "$1" in
  	;;
  
      *)

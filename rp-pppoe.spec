@@ -2,7 +2,7 @@
 
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
-Version:	3.13
+Version:	3.14
 Release:	1
 License:	GPLv2+
 Group:		System/Servers
