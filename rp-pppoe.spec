@@ -15,7 +15,7 @@ Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
 Patch1:		rp-pppoe-3.11-override-incompatible-compiler-and-linker-flags.patch
 Patch2:		rp-pppoe-3.10-lsb.patch
 Patch3:		pass-cflags-to-wrapper.patch
-BuildRequires:	ppp-devel = %{pppver}
+BuildRequires:	ppp-devel 
 Requires:	ppp >= 2.4.1
 
 %description
