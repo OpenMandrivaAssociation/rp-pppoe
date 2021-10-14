@@ -3,7 +3,7 @@
 Summary:	ADSL/PPPoE userspace driver
 Name:		rp-pppoe
 Version:	3.14
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		System/Servers
 Url:		http://www.roaringpenguin.com/products/pppoe
@@ -52,7 +52,8 @@ cd src
 %configure \
 	--docdir=%{_docdir}/%{name} \
 	--disable-plugin
-%make
+
+%make_build
 
 %install
 %make_install -C src
@@ -96,16 +97,15 @@ rm -r %{buildroot}%{_sysconfdir}/ppp/plugins
 %{_sbindir}/pppoe-start
 %{_sbindir}/pppoe-status
 %{_sbindir}/pppoe-stop
-%{_mandir}/man[58]/*
+%doc %{_mandir}/man[58]/*
 %{_unitdir}/pppoe-server.service
 %{_unitdir}/pppoe.service
 
 %files gui
 %{_bindir}/tkpppoe
 %{_sbindir}/pppoe-wrapper
-%{_mandir}/man1/*
+%doc %{_mandir}/man1/*
 %{_datadir}/applications/*
 %dir %{_datadir}/tkpppoe
 %dir %{_sysconfdir}/ppp/rp-pppoe-gui
 %{_datadir}/tkpppoe/*
-
