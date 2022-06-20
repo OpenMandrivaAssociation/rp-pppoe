@@ -1,6 +1,6 @@
-diff -up rp-pppoe-3.14/src/pppoe.c.1~ rp-pppoe-3.14/src/pppoe.c
---- rp-pppoe-3.14/src/pppoe.c.1~	2020-05-27 02:29:37.000000000 +0200
-+++ rp-pppoe-3.14/src/pppoe.c	2020-05-29 15:45:57.305808007 +0200
+diff -up rp-pppoe-3.15/src/pppoe.c.1~ rp-pppoe-3.15/src/pppoe.c
+--- rp-pppoe-3.15/src/pppoe.c.1~	2021-05-07 15:18:00.000000000 +0200
++++ rp-pppoe-3.15/src/pppoe.c	2022-06-20 19:30:56.446986365 +0200
 @@ -67,6 +67,48 @@ int optFloodDiscovery    = 0;   /* Flood
  				   USED FOR STRESS-TESTING ONLY.  DO NOT
  				   USE THE -F OPTION AGAINST A REAL ISP */
@@ -82,7 +82,7 @@ diff -up rp-pppoe-3.14/src/pppoe.c.1~ rp-pppoe-3.14/src/pppoe.c
  	    break;
  #endif
  	case 'T':
-@@ -673,6 +719,15 @@ main(int argc, char *argv[])
+@@ -673,6 +719,16 @@ main(int argc, char *argv[])
  	exit(EXIT_SUCCESS);
      }
  
@@ -95,6 +95,7 @@ diff -up rp-pppoe-3.14/src/pppoe.c.1~ rp-pppoe-3.14/src/pppoe.c
 +
 +    set_flag(conn.ifName, (IFF_UP | IFF_RUNNING));
 +#endif
-     /* Set signal handlers: send PADT on HUP; ignore TERM and INT */
-     signal(SIGTERM, SIG_IGN);
-     signal(SIGINT, SIG_IGN);
++
+     /* Set signal handlers: send PADT on HUP, TERM and INT */
+     signal(SIGTERM, sigPADT);
+     signal(SIGINT,  sigPADT);
