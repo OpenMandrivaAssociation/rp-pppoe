@@ -1,7 +1,7 @@
-diff -up rp-pppoe-3.14/src/Makefile.in.2~ rp-pppoe-3.14/src/Makefile.in
---- rp-pppoe-3.14/src/Makefile.in.2~	2020-05-29 15:46:18.842036070 +0200
-+++ rp-pppoe-3.14/src/Makefile.in	2020-05-29 15:47:25.577742831 +0200
-@@ -134,25 +134,25 @@ relay.o: relay.c relay.h pppoe.h
+diff -up rp-pppoe-4.0/src/Makefile.in.2~ rp-pppoe-4.0/src/Makefile.in
+--- rp-pppoe-4.0/src/Makefile.in.2~	2023-04-30 15:53:12.346103054 +0200
++++ rp-pppoe-4.0/src/Makefile.in	2023-04-30 15:55:56.020784231 +0200
+@@ -118,25 +118,25 @@ relay.o: relay.c relay.h pppoe.h
  
  # Linux-specific plugin
  rp-pppoe.so: plugin/plugin.o plugin/libplugin.a
@@ -13,7 +13,7 @@ diff -up rp-pppoe-3.14/src/Makefile.in.2~ rp-pppoe-3.14/src/Makefile.in
 +	@CC@ -DPLUGIN=1 '-DRP_VERSION="$(RP_VERSION)"' $(CFLAGS) -I$(PPPD_INCDIR) -c -o $@ -fno-PIE -fPIC $<
  
  plugin/libplugin.a: plugin/discovery.o plugin/if.o plugin/common.o plugin/debug.o
- 	ar -rc $@ $^
+ 	@AR@ -rc $@ $^
  
  plugin/discovery.o: discovery.c
 -	@CC@ -DPLUGIN=1 $(CFLAGS) '-DRP_VERSION="$(RP_VERSION)"' -I$(PPPD_INCDIR) -c -o $@ -fPIC $<
