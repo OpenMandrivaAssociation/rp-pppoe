@@ -6,7 +6,7 @@ Version:	4.0
 Release:	1
 License:	GPLv2+
 Group:		System/Servers
-Url:		http://www.roaringpenguin.com/products/pppoe
+Url:		https://www.roaringpenguin.com/products/pppoe
 Source0:	https://dianne.skoll.ca/projects/rp-pppoe/download/rp-pppoe-%{version}.tar.gz
 Source3:	http://www.luigisgro.com/sw/rp-pppoe-3.8.patch/README-first-session-packet-lost.txt
 Source4:	pppoe-server.service
