@@ -13,6 +13,11 @@ Source4:	pppoe-server.service
 Source5:	pppoe.service
 Patch0:		rp-pppoe-3.8-CAN-2004-0564.patch
 Patch1:		rp-pppoe-3.11-override-incompatible-compiler-and-linker-flags.patch
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	ppp-devel 
 Requires:	ppp >= 2.4.1
 
